@@ -1,29 +1,35 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <title>Lộ Trình Tập Luyện 4 Tuần</title>
+    <title>Lộ Trình Tập Luyện</title>
     <style>
         :root {
             /* Light Theme Colors */
             --primary: #ff4757;
             --secondary: #2ed573;
-            --bg: #f5f6fa;       /* Nền sáng nhẹ */
-            --card: #ffffff;     /* Card trắng tinh */
-            --text: #2f3542;     /* Chữ màu xám đậm dễ đọc */
-            --gray: #747d8c;     /* Màu xám trung tính */
-            --border: #dfe4ea;   /* Viền nhẹ */
+            --bg: #f5f6fa;
+            --card: #ffffff;
+            --text: #2f3542;
+            --gray: #747d8c;
+            --border: #dfe4ea;
             --morning: #ffa502;
-            --afternoon: #3742fa; /* Xanh đậm hơn chút cho nổi trên nền trắng */
+            --afternoon: #3742fa;
             --ai-color: #a55eea;
-            --shadow-sm: 0 2px 5px rgba(0,0,0,0.05);
-            --shadow-md: 0 4px 15px rgba(0,0,0,0.08);
+            --timer-color: #2f3542;
+            /* Màu cho nút Timer */
+            --shadow-sm: 0 2px 5px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 15px rgba(0, 0, 0, 0.08);
         }
 
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -31,12 +37,13 @@
             color: var(--text);
             margin: 0;
             padding: 0;
-            padding-bottom: 100px;
+            padding-bottom: 120px;
+            /* Tăng padding bottom để tránh nút FAB */
         }
 
-        /* HEADER */
+        /* HEADER & UI CŨ GIỮ NGUYÊN */
         .header {
-            background: rgba(255, 255, 255, 0.95); /* Kính mờ trắng */
+            background: rgba(255, 255, 255, 0.95);
             padding: 20px;
             position: sticky;
             top: 0;
@@ -71,9 +78,9 @@
             margin-bottom: 8px;
             font-weight: 500;
         }
-        
+
         .progress-track {
-            background: #dfe4ea; /* Track màu xám nhạt */
+            background: #dfe4ea;
             height: 10px;
             width: 100%;
             border-radius: 10px;
@@ -97,7 +104,10 @@
             gap: 12px;
             scrollbar-width: none;
         }
-        .week-nav::-webkit-scrollbar { display: none; }
+
+        .week-nav::-webkit-scrollbar {
+            display: none;
+        }
 
         .week-btn {
             background: var(--card);
@@ -124,7 +134,7 @@
         .session-toggle {
             display: flex;
             margin: 5px 20px 25px 20px;
-            background: #e1e5ea; /* Nền toggle tối hơn nền web chút */
+            background: #e1e5ea;
             border-radius: 16px;
             padding: 4px;
             position: relative;
@@ -160,22 +170,24 @@
             background: var(--card);
             border-radius: 14px;
             transition: transform 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
             z-index: 1;
         }
 
-        /* Custom colors for session indicator */
         .session-toggle[data-active="morning"] .indicator {
             background: var(--morning);
             transform: translateX(0);
         }
+
         .session-toggle[data-active="afternoon"] .indicator {
             background: var(--afternoon);
             transform: translateX(100%);
         }
 
         /* EXERCISE LIST */
-        .container { padding: 0 20px; }
+        .container {
+            padding: 0 20px;
+        }
 
         .exercise-card {
             background: var(--card);
@@ -188,7 +200,7 @@
             transition: all 0.2s;
             border: 1px solid transparent;
             cursor: pointer;
-            box-shadow: var(--shadow-sm); /* Thêm bóng đổ nhẹ cho nổi */
+            box-shadow: var(--shadow-sm);
             user-select: none;
         }
 
@@ -203,25 +215,24 @@
             opacity: 0.8;
         }
 
-        .exercise-info h3 { 
-            margin: 0 0 6px 0; 
-            font-size: 1.05rem; 
+        .exercise-info h3 {
+            margin: 0 0 6px 0;
+            font-size: 1.05rem;
             font-weight: 700;
             color: var(--text);
         }
-        
+
         .exercise-card.done .exercise-info h3 {
             text-decoration: line-through;
             color: var(--gray);
         }
 
-        .exercise-info p { 
-            margin: 0; 
-            color: var(--gray); 
-            font-size: 0.9rem; 
+        .exercise-info p {
+            margin: 0;
+            color: var(--gray);
+            font-size: 0.9rem;
         }
 
-        /* CHECKBOX ANIMATION */
         .checkbox {
             width: 26px;
             height: 26px;
@@ -257,7 +268,7 @@
             stroke-dashoffset: 0;
         }
 
-        /* FOOTER */
+        /* FOOTER & WAKE LOCK TOGGLE */
         .reset-area {
             text-align: center;
             margin-top: 40px;
@@ -275,190 +286,212 @@
             cursor: pointer;
             font-weight: 600;
             box-shadow: var(--shadow-sm);
+            transition: 0.2s;
         }
 
-        /* AI Floating Button & Modal Styles (Updated for Light Mode) */
-        .ai-fab {
+        .reset-btn:active {
+            background: #ff6b6b;
+            color: white;
+        }
+
+        .wakelock-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            color: var(--gray);
+            background: #eee;
+            margin-bottom: 15px;
+            cursor: pointer;
+        }
+
+        .wakelock-status.active {
+            background: rgba(46, 213, 115, 0.15);
+            color: #27ae60;
+            font-weight: 600;
+        }
+
+        /* FAB BUTTONS CONTAINER */
+        .fab-container {
             position: fixed;
             bottom: 25px;
-            right: 25px;
-            width: 60px;
-            height: 60px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            /* Xếp chồng hoặc ngang đều được */
+            gap: 15px;
+            z-index: 200;
+            align-items: flex-end;
+        }
+
+        /* TIMER FAB */
+        .timer-fab {
+            width: 55px;
+            height: 55px;
+            background: var(--timer-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(47, 53, 66, 0.4);
+            border: none;
+            cursor: pointer;
+            color: white;
+            transition: transform 0.2s;
+        }
+
+        .timer-fab:active {
+            transform: scale(0.9);
+        }
+
+        .timer-fab svg {
+            width: 28px;
+            height: 28px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2;
+        }
+
+        /* AI FAB (Giữ nguyên nhưng nhỏ hơn chút nếu muốn) */
+        .ai-fab {
+            width: 55px;
+            height: 55px;
             background: var(--ai-color);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 4px 20px rgba(165, 94, 234, 0.4);
+            box-shadow: 0 4px 15px rgba(165, 94, 234, 0.4);
             border: none;
             cursor: pointer;
-            z-index: 200;
+            color: white;
             transition: transform 0.2s;
-            color: white;
         }
-        .ai-fab span { font-size: 28px; }
 
-        .ai-modal-overlay {
+        .ai-fab:active {
+            transform: scale(0.9);
+        }
+
+        /* TIMER MODAL (Giao diện giống iPhone Stopwatch) */
+        .timer-overlay {
             position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.5); /* Tối nền phía sau */
-            z-index: 300;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.85);
+            /* Nền tối */
+            z-index: 400;
             display: none;
-            align-items: flex-end;
-            backdrop-filter: blur(2px);
-        }
-        .ai-modal-overlay.open { display: flex; }
-
-        .ai-modal {
-            background: #ffffff;
-            width: 100%;
-            height: 85vh;
-            border-radius: 25px 25px 0 0;
-            display: flex;
             flex-direction: column;
-            overflow: hidden;
-            box-shadow: 0 -10px 40px rgba(0,0,0,0.1);
-            animation: slideUp 0.3s ease-out;
-        }
-
-        @keyframes slideUp {
-            from { transform: translateY(100%); }
-            to { transform: translateY(0); }
-        }
-
-        .ai-header {
-            padding: 18px 20px;
-            background: linear-gradient(135deg, #a55eea, #8854d0);
-            color: white;
-            display: flex;
-            justify-content: space-between;
+            justify-content: center;
             align-items: center;
-            font-weight: bold;
-            font-size: 1.1rem;
-            box-shadow: 0 2px 10px rgba(165, 94, 234, 0.2);
-        }
-        
-        .ai-content {
-            flex: 1;
-            padding: 20px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            background: #f7f9fc;
+            backdrop-filter: blur(5px);
+            animation: fadeIn 0.2s ease-out;
         }
 
-        .chat-message {
-            max-width: 85%;
-            padding: 12px 16px;
-            border-radius: 18px;
-            line-height: 1.5;
-            font-size: 0.95rem;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        .timer-overlay.open {
+            display: flex;
         }
-        .chat-message.ai {
-            background: #ffffff;
-            color: var(--text);
-            align-self: flex-start;
-            border-bottom-left-radius: 4px;
-            border: 1px solid #edf2f7;
-        }
-        .chat-message.user {
-            background: #a55eea;
-            align-self: flex-end;
-            border-bottom-right-radius: 4px;
+
+        .timer-display {
+            font-family: "SF Pro Display", -apple-system, sans-serif;
+            font-size: 5rem;
+            font-weight: 200;
             color: white;
-        }
-        .chat-message.system {
-            background: transparent;
-            align-self: center;
-            color: var(--gray);
-            font-size: 0.8rem;
-            text-align: center;
-            border: none;
-            box-shadow: none;
-            width: 100%;
+            font-variant-numeric: tabular-nums;
+            margin-bottom: 50px;
+            text-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
         }
 
-        .ai-input-area {
-            padding: 15px;
-            border-top: 1px solid #eee;
+        .timer-controls {
             display: flex;
-            gap: 10px;
-            background: #ffffff;
+            gap: 60px;
+            align-items: center;
         }
 
-        .ai-input {
-            flex: 1;
-            background: #f1f2f6;
-            border: 1px solid transparent;
-            padding: 12px 15px;
-            border-radius: 25px;
-            color: var(--text);
-            font-size: 1rem;
-            transition: all 0.2s;
-        }
-        .ai-input:focus { 
-            outline: none; 
-            background: #ffffff;
-            border-color: #a55eea;
-            box-shadow: 0 0 0 3px rgba(165, 94, 234, 0.1);
-        }
-
-        .ai-send-btn {
-            background: #a55eea;
-            border: none;
-            width: 48px;
-            height: 48px;
+        .timer-btn {
+            width: 80px;
+            height: 80px;
             border-radius: 50%;
-            color: white;
+            border: none;
+            font-size: 1rem;
+            font-weight: 500;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: transform 0.1s;
-            box-shadow: 0 3px 10px rgba(165, 94, 234, 0.3);
+            color: white;
+            position: relative;
         }
-        .ai-send-btn:active { transform: scale(0.95); }
-        
-        .typing-indicator span {
-            display: inline-block;
-            width: 6px;
-            height: 6px;
-            background: #a4b0be;
+
+        /* Vòng tròn viền ngoài nút cho giống iPhone */
+        .timer-btn::after {
+            content: '';
+            position: absolute;
+            top: -4px;
+            left: -4px;
+            right: -4px;
+            bottom: -4px;
             border-radius: 50%;
-            animation: bounce 1.4s infinite ease-in-out both;
-            margin: 0 2px;
+            border: 2px solid transparent;
         }
-        .typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
-        .typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
-        
-        @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
 
-        .quick-actions {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 10px;
-            overflow-x: auto;
-            padding-bottom: 5px;
-            scrollbar-width: none;
+        /* Nút Start */
+        .btn-start {
+            background: rgba(50, 215, 75, 0.2);
+            color: #32d74b;
         }
-        .quick-actions::-webkit-scrollbar { display: none; }
 
-        .action-chip {
-            background: white;
-            border: 1px solid #e1e1e1;
-            color: #a55eea;
-            padding: 8px 14px;
+        .btn-start::after {
+            border-color: transparent;
+        }
+
+        .btn-start:active {
+            background: rgba(50, 215, 75, 0.4);
+        }
+
+        /* Nút Stop */
+        .btn-stop {
+            background: rgba(255, 69, 58, 0.2);
+            color: #ff453a;
+            display: none;
+        }
+
+        .btn-stop:active {
+            background: rgba(255, 69, 58, 0.4);
+        }
+
+        /* Nút Reset */
+        .btn-reset {
+            background: rgba(128, 128, 128, 0.2);
+            color: #ebebf5;
+        }
+
+        .btn-reset:active {
+            background: rgba(128, 128, 128, 0.4);
+        }
+
+        .timer-close {
+            position: absolute;
+            top: 40px;
+            right: 30px;
+            color: white;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            padding: 8px 16px;
             border-radius: 20px;
-            font-size: 0.85rem;
-            white-space: nowrap;
+            font-size: 0.9rem;
             cursor: pointer;
-            font-weight: 600;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            transition: all 0.2s;
         }
-        .action-chip:active { transform: scale(0.95); background: #f8f9fa; }
+
+        .timer-hint {
+            color: rgba(255, 255, 255, 0.6);
+            margin-top: 30px;
+            font-size: 0.85rem;
+        }
 
         /* Notification */
         .confetti-modal {
@@ -473,18 +506,29 @@
             font-weight: bold;
             z-index: 1000;
             transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
             display: flex;
             align-items: center;
             gap: 10px;
             border: 1px solid #f1f2f6;
         }
+
         .confetti-modal.show {
             transform: translateX(-50%) translateY(0);
         }
 
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
     </style>
 </head>
+
 <body>
 
     <!-- Header -->
@@ -528,14 +572,47 @@
         <!-- Javascript will populate this -->
     </div>
 
-    <!-- Reset Data -->
+    <!-- Footer Area: Reset & Wake Lock Info -->
     <div class="reset-area">
+        <!-- Nút toggle chống tắt màn hình -->
+        <div class="wakelock-status" id="wakeLockStatus" onclick="timerApp.toggleWakeLock()">
+            <span id="wakeLockIcon">🔒</span> <span id="wakeLockText">Cho phép tắt màn hình</span>
+        </div>
+
         <p style="font-size: 0.85rem; color: #747d8c; font-style: italic; margin-bottom: 15px;">
             "Đừng tập quá sức, hãy lắng nghe cơ thể."
         </p>
-        <button class="reset-btn" onclick="app.resetData()">Xóa dữ liệu & Làm lại</button>
+        <!-- Chỉ reset tuần hiện tại -->
+        <button class="reset-btn" onclick="app.resetCurrentWeek()">Xóa dữ liệu Tuần này & Làm lại</button>
     </div>
 
+    <!-- Floating Action Buttons -->
+    <div class="fab-container">
+        <!-- Timer Button -->
+        <button class="timer-fab" onclick="timerApp.open()">
+            <svg viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+        </button>
+
+    </div>
+
+    <!-- TIMER OVERLAY (STOPWATCH) -->
+    <div class="timer-overlay" id="timerOverlay">
+        <button class="timer-close" onclick="timerApp.close()">Đóng</button>
+
+        <div class="timer-display" id="timerDisplay">00:00.00</div>
+
+        <div class="timer-controls">
+            <button class="timer-btn btn-reset" onclick="timerApp.reset()">Vòng lại</button>
+
+            <button class="timer-btn btn-start" id="btnStart" onclick="timerApp.start()">Bắt đầu</button>
+            <button class="timer-btn btn-stop" id="btnStop" onclick="timerApp.stop()">Dừng</button>
+        </div>
+
+        <div class="timer-hint">Màn hình sẽ luôn sáng khi mở đồng hồ</div>
+    </div>
 
     <!-- Notification -->
     <div class="confetti-modal" id="congratsModal">
@@ -543,43 +620,45 @@
     </div>
 
     <script>
-
+        // --- 1. CORE APPLICATION LOGIC ---
         const app = {
             data: {
                 1: {
                     morning: [
-                        { name: "Chạy nâng cao gối", reps: "60 nhịp" },
-                        { name: "Mountain Climber", reps: "2 sets × 15 cái" },
+                        { name: "High Knees (Chạy nâng cao gối)", reps: "60 nhịp" },
+                        { name: "Push-up", reps: "3 sets × 6–8 cái (Form chuẩn)" },
                         { name: "Plank", reps: "2 sets × 20–25s" },
-                        { name: "Push-up", reps: "3 sets × 6–8 (Form chuẩn)" }
+                        { name: "Gánh bao gạo 5kg bước tại chỗ", reps: "2 sets × 20 bước" }
                     ],
                     afternoon: [
                         { name: "Hollow Hold", reps: "2 sets × 15–20s" },
-                        { name: "Plank Tap", reps: "2 sets × 10 cái" },
                         { name: "Side Plank", reps: "15s mỗi bên" },
-                        { name: "Ab Wheel Rollout", reps: "2 sets × 3–4 (Nhẹ)" }
+                        { name: "Mountain Climber", reps: "2 sets × 15 cái" },
+                        { name: "Ab Wheel Rollout", reps: "2 sets × 3–4 lần (Nhẹ)" }
                     ]
                 },
                 2: {
                     morning: [
-                        { name: "Chạy cao gối", reps: "70–80 nhịp" },
-                        { name: "Mountain Climber", reps: "3 sets × 15 cái" },
+                        { name: "High Knees", reps: "70–80 nhịp" },
+                        { name: "Push-up", reps: "3 sets × 8 cái" },
                         { name: "Plank", reps: "3 sets × 25–30s" },
-                        { name: "Push-up", reps: "3 sets × 8 cái" }
+                        { name: "Gánh bao gạo 5kg squat nhẹ", reps: "2 sets × 10 cái" },
+                        { name: "Tạ gạo 5kg – Curl tay", reps: "2 sets × 10 cái mỗi tay" }
                     ],
                     afternoon: [
                         { name: "Hollow Hold", reps: "3 sets × 20–25s" },
-                        { name: "Side Plank", reps: "20s mỗi bên" },
                         { name: "Plank Tap", reps: "3 sets × 10–12 cái" },
+                        { name: "Side Plank", reps: "20s mỗi bên" },
                         { name: "Ab Wheel Rollout", reps: "3 sets × 4 cái" }
                     ]
                 },
                 3: {
                     morning: [
-                        { name: "Chạy cao gối", reps: "100 nhịp" },
+                        { name: "High Knees", reps: "100 nhịp" },
+                        { name: "Push-up", reps: "4 sets × 8–10 cái" },
                         { name: "Mountain Climber", reps: "3 sets × 20 cái" },
                         { name: "Plank", reps: "3 sets × 30s" },
-                        { name: "Push-up", reps: "4 sets × 8–10 cái" }
+                        { name: "Tạ gạo 5kg – Curl tay", reps: "2 sets × 10 cái mỗi tay" }
                     ],
                     afternoon: [
                         { name: "Hollow Hold", reps: "3 sets × 25–30s" },
@@ -590,16 +669,17 @@
                 },
                 4: {
                     morning: [
-                        { name: "Chạy cao gối", reps: "120 nhịp" },
-                        { name: "Mountain Climber", reps: "3 sets × 25 cái" },
+                        { name: "High Knees", reps: "120 nhịp" },
+                        { name: "Push-up", reps: "4 sets × 10 cái (Mục tiêu)" },
+                        { name: "Incline Push-up (chống đẩy dốc lên ghế)", reps: "2 sets × 10 cái" },
                         { name: "Plank", reps: "3 sets × 35–40s" },
-                        { name: "Push-up", reps: "4 sets × 10 (Mục tiêu)" }
+                        { name: "Bao gạo 5kg – Vai nhún (Shoulder shrug)", reps: "2 sets × 12 cái" }
                     ],
                     afternoon: [
                         { name: "Hollow Hold", reps: "3 sets × 30–35s" },
                         { name: "Side Plank", reps: "25s mỗi bên" },
                         { name: "Plank Tap", reps: "3 sets × 14–16 cái" },
-                        { name: "Crunch", reps: "3 sets × 12 cái" },
+                        { name: "Crunch", reps: "3 sets × 12–15 cái" },
                         { name: "Ab Wheel Rollout", reps: "3 sets × 6 cái" }
                     ]
                 }
@@ -611,7 +691,7 @@
                 currentPercent: 0
             },
 
-            init: function() {
+            init: function () {
                 const saved = localStorage.getItem('workoutProgressV2');
                 if (saved) {
                     this.state.progress = JSON.parse(saved);
@@ -621,7 +701,7 @@
                 this.updateProgressUI();
             },
 
-            setWeek: function(week) {
+            setWeek: function (week) {
                 this.state.currentWeek = week;
                 document.getElementById('currentWeekDisplay').innerText = week;
                 this.renderNav();
@@ -629,7 +709,7 @@
                 this.updateProgressUI();
             },
 
-            setSession: function(session) {
+            setSession: function (session) {
                 this.state.currentSession = session;
                 const toggle = document.getElementById('sessionToggle');
                 toggle.setAttribute('data-active', session);
@@ -640,7 +720,7 @@
                 this.renderList();
             },
 
-            toggleExercise: function(index) {
+            toggleExercise: function (index) {
                 const id = `w${this.state.currentWeek}_${this.state.currentSession}_${index}`;
                 if (this.state.progress[id]) {
                     delete this.state.progress[id];
@@ -648,15 +728,15 @@
                     this.state.progress[id] = true;
                 }
                 this.save();
-                this.renderList(); 
+                this.renderList();
                 this.updateProgressUI();
             },
 
-            save: function() {
+            save: function () {
                 localStorage.setItem('workoutProgressV2', JSON.stringify(this.state.progress));
             },
 
-            renderNav: function() {
+            renderNav: function () {
                 const btns = document.querySelectorAll('.week-btn');
                 btns.forEach((btn, idx) => {
                     if (idx + 1 === this.state.currentWeek) btn.classList.add('active');
@@ -664,11 +744,11 @@
                 });
             },
 
-            renderList: function() {
+            renderList: function () {
                 const listEl = document.getElementById('exerciseList');
                 listEl.innerHTML = '';
                 const exercises = this.data[this.state.currentWeek][this.state.currentSession];
-                
+
                 exercises.forEach((ex, index) => {
                     const id = `w${this.state.currentWeek}_${this.state.currentSession}_${index}`;
                     const isDone = this.state.progress[id];
@@ -688,7 +768,7 @@
                 });
             },
 
-            updateProgressUI: function() {
+            updateProgressUI: function () {
                 const morningEx = this.data[this.state.currentWeek].morning;
                 const afternoonEx = this.data[this.state.currentWeek].afternoon;
                 const total = morningEx.length + afternoonEx.length;
@@ -713,7 +793,7 @@
                 }
             },
 
-            showCongrats: function() {
+            showCongrats: function () {
                 if (this.congratsShown) return;
                 const modal = document.getElementById('congratsModal');
                 modal.classList.add('show');
@@ -724,65 +804,165 @@
                 }, 3000);
             },
 
-            resetData: function() {
-                if(confirm("Bạn muốn xóa toàn bộ lịch sử tập luyện và bắt đầu lại từ đầu?")) {
-                    localStorage.removeItem('workoutProgressV2');
-                    this.state.progress = {};
-                    this.init();
+            // LOGIC RESET MỚI: Chỉ xóa tuần hiện tại
+            resetCurrentWeek: function () {
+                const currentW = this.state.currentWeek;
+                if (confirm(`Bạn có chắc muốn xóa hết dữ liệu tập luyện của TUẦN ${currentW} không?`)) {
+                    // Lọc và xóa các key bắt đầu bằng w{currentWeek}_
+                    const keys = Object.keys(this.state.progress);
+                    keys.forEach(key => {
+                        if (key.startsWith(`w${currentW}_`)) {
+                            delete this.state.progress[key];
+                        }
+                    });
+                    this.save();
+                    this.renderList();
+                    this.updateProgressUI();
                 }
             }
         };
 
-        const aiApp = {
-            openModal: function() {
-                document.getElementById('aiModalOverlay').classList.add('open');
+
+        // --- 2. TIMER & WAKE LOCK LOGIC ---
+        const timerApp = {
+            startTime: 0,
+            elapsedTime: 0,
+            intervalId: null,
+            isRunning: false,
+            wakeLock: null,
+            wakeLockEnabled: false,
+
+            // --- UI FUNCTIONS ---
+            open: function () {
+                document.getElementById('timerOverlay').classList.add('open');
+                // Tự động bật giữ màn hình khi mở timer
+                this.requestWakeLock();
             },
-            closeModal: function() {
-                document.getElementById('aiModalOverlay').classList.remove('open');
-            },
-            appendMessage: function(sender, text) {
-                const content = document.getElementById('aiChatContent');
-                const div = document.createElement('div');
-                div.className = `chat-message ${sender}`;
-                div.innerHTML = text; // Allow simple HTML
-                content.appendChild(div);
-                content.scrollTop = content.scrollHeight;
-                
-                // Keep quick actions at the bottom if AI speaks
-                if (sender === 'ai') {
-                    const actions = document.querySelector('.quick-actions');
-                    content.appendChild(actions); // Move actions to bottom
+
+            close: function () {
+                // Nếu đang chạy thì không cho đóng hoặc hỏi user, ở đây cho đóng nhưng vẫn chạy nền hoặc dừng
+                // Tốt nhất là dừng timer để tiết kiệm pin nếu user đóng
+                this.stop();
+                document.getElementById('timerOverlay').classList.remove('open');
+                // Tắt giữ màn hình nếu user không bật toggle toàn cục
+                if (!this.wakeLockEnabled) {
+                    this.releaseWakeLock();
                 }
             },
-            
-            showTyping: function() {
-                const content = document.getElementById('aiChatContent');
-                const div = document.createElement('div');
-                div.className = 'chat-message ai typing-indicator';
-                div.id = 'aiTyping';
-                div.innerHTML = '<span></span><span></span><span></span>';
-                content.appendChild(div);
-                content.scrollTop = content.scrollHeight;
+
+            // --- STOPWATCH LOGIC ---
+            start: function () {
+                if (!this.isRunning) {
+                    this.startTime = Date.now() - this.elapsedTime;
+                    this.intervalId = setInterval(() => {
+                        this.elapsedTime = Date.now() - this.startTime;
+                        this.updateDisplay(this.elapsedTime);
+                    }, 10); // Update every 10ms for smooth cents
+
+                    this.isRunning = true;
+                    document.getElementById('btnStart').style.display = 'none';
+                    document.getElementById('btnStop').style.display = 'flex';
+                    document.querySelector('.btn-reset').innerText = "Vòng"; // Lap (chưa implement logic Lap nhưng đổi text cho giống iPhone)
+                }
             },
 
-            removeTyping: function() {
-                const typing = document.getElementById('aiTyping');
-                if(typing) typing.remove();
+            stop: function () {
+                if (this.isRunning) {
+                    clearInterval(this.intervalId);
+                    this.isRunning = false;
+                    document.getElementById('btnStart').style.display = 'flex';
+                    document.getElementById('btnStop').style.display = 'none';
+                    document.querySelector('.btn-reset').innerText = "Vòng lại"; // Reset text
+                }
             },
 
+            reset: function () {
+                if (this.isRunning) {
+                    // Logic for "Lap" could go here if wanted
+                } else {
+                    this.elapsedTime = 0;
+                    this.updateDisplay(0);
+                    document.querySelector('.btn-reset').innerText = "Vòng lại";
+                }
+            },
 
+            updateDisplay: function (time) {
+                // Format: MM:SS.ms
+                let date = new Date(time);
+                let m = date.getUTCMinutes().toString().padStart(2, '0');
+                let s = date.getUTCSeconds().toString().padStart(2, '0');
+                let ms = Math.floor(date.getUTCMilliseconds() / 10).toString().padStart(2, '0');
 
-            askProgress: function() {
-                const w = app.state.currentWeek;
-                const p = app.state.currentPercent;
-                const context = `Tôi đang ở Tuần ${w} của lộ trình phục hồi. Tuần này tôi đã hoàn thành ${p}% khối lượng bài tập. Hãy đưa ra nhận xét về tiến độ và một lời động viên ngắn gọn, mạnh mẽ để tôi tiếp tục cố gắng.`;
-                this.appendMessage('user', `📊 Phân tích tiến độ tuần ${w}`);
-                this.callGemini(context);
+                document.getElementById('timerDisplay').innerText = `${m}:${s}.${ms}`;
+            },
+
+            // --- WAKE LOCK (KEEP SCREEN ON) ---
+            // Yêu cầu: HTTPS hoặc Localhost
+            requestWakeLock: async function () {
+                if ('wakeLock' in navigator) {
+                    try {
+                        this.wakeLock = await navigator.wakeLock.request('screen');
+                        console.log('Wake Lock is active');
+                        this.updateWakeLockUI(true);
+
+                        // Nếu user chuyển tab rồi quay lại, lock bị mất, cần request lại
+                        this.wakeLock.addEventListener('release', () => {
+                            console.log('Wake Lock released');
+                            // Chỉ update UI thành 'Tắt' nếu user chủ động tắt, 
+                            // còn hệ thống release thì ta sẽ cố bật lại khi visibility change
+                        });
+                    } catch (err) {
+                        console.error(`${err.name}, ${err.message}`);
+                    }
+                }
+            },
+
+            releaseWakeLock: function () {
+                if (this.wakeLock !== null) {
+                    this.wakeLock.release()
+                        .then(() => {
+                            this.wakeLock = null;
+                            this.updateWakeLockUI(false);
+                        });
+                }
+            },
+
+            toggleWakeLock: function () {
+                this.wakeLockEnabled = !this.wakeLockEnabled;
+                if (this.wakeLockEnabled) {
+                    this.requestWakeLock();
+                } else {
+                    this.releaseWakeLock();
+                }
+            },
+
+            updateWakeLockUI: function (isActive) {
+                const statusEl = document.getElementById('wakeLockStatus');
+                const textEl = document.getElementById('wakeLockText');
+                const iconEl = document.getElementById('wakeLockIcon');
+
+                if (isActive) {
+                    statusEl.classList.add('active');
+                    textEl.innerText = "Màn hình luôn sáng";
+                    iconEl.innerText = "⚡️";
+                } else {
+                    statusEl.classList.remove('active');
+                    textEl.innerText = "Cho phép tắt màn hình";
+                    iconEl.innerText = "🔒";
+                }
             }
         };
+
+        // Handle visibility change to re-acquire wake lock if it was enabled
+        document.addEventListener('visibilitychange', async () => {
+            if (timerApp.wakeLock !== null && document.visibilityState === 'visible') {
+                timerApp.requestWakeLock();
+            }
+        });
 
         // Start App
         app.init();
     </script>
 </body>
+
 </html>
