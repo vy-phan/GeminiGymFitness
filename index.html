@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <title>Lộ Trình Tập Luyện 4 Tuần</title>
+    <style>
+        :root {
+            /* Light Theme Colors */
+            --primary: #ff4757;
+            --secondary: #2ed573;
+            --bg: #f5f6fa;       /* Nền sáng nhẹ */
+            --card: #ffffff;     /* Card trắng tinh */
+            --text: #2f3542;     /* Chữ màu xám đậm dễ đọc */
+            --gray: #747d8c;     /* Màu xám trung tính */
+            --border: #dfe4ea;   /* Viền nhẹ */
+            --morning: #ffa502;
+            --afternoon: #3742fa; /* Xanh đậm hơn chút cho nổi trên nền trắng */
+            --ai-color: #a55eea;
+            --shadow-sm: 0 2px 5px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 15px rgba(0,0,0,0.08);
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 0;
+            padding-bottom: 100px;
+        }
+
+        /* HEADER */
+        .header {
+            background: rgba(255, 255, 255, 0.95); /* Kính mờ trắng */
+            padding: 20px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 800;
+            color: var(--text);
+        }
+
+        /* PROGRESS BAR */
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: var(--gray);
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        .progress-track {
+            background: #dfe4ea; /* Track màu xám nhạt */
+            height: 10px;
+            width: 100%;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--morning));
+            width: 0%;
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 10px;
+        }
+
+        /* WEEK NAVIGATION */
+        .week-nav {
+            display: flex;
+            overflow-x: auto;
+            padding: 15px 15px;
+            background: var(--bg);
+            gap: 12px;
+            scrollbar-width: none;
+        }
+        .week-nav::-webkit-scrollbar { display: none; }
+
+        .week-btn {
+            background: var(--card);
+            border: 1px solid var(--border);
+            color: var(--gray);
+            font-weight: 600;
+            padding: 10px 20px;
+            border-radius: 25px;
+            white-space: nowrap;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+            cursor: pointer;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .week-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(255, 71, 87, 0.3);
+        }
+
+        /* SESSION TOGGLE */
+        .session-toggle {
+            display: flex;
+            margin: 5px 20px 25px 20px;
+            background: #e1e5ea; /* Nền toggle tối hơn nền web chút */
+            border-radius: 16px;
+            padding: 4px;
+            position: relative;
+        }
+
+        .session-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            background: transparent;
+            color: var(--gray);
+            font-weight: 600;
+            font-size: 0.95rem;
+            z-index: 2;
+            cursor: pointer;
+            transition: color 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .session-btn.active {
+            color: white;
+        }
+
+        .indicator {
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            width: calc(50% - 4px);
+            height: calc(100% - 8px);
+            background: var(--card);
+            border-radius: 14px;
+            transition: transform 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            z-index: 1;
+        }
+
+        /* Custom colors for session indicator */
+        .session-toggle[data-active="morning"] .indicator {
+            background: var(--morning);
+            transform: translateX(0);
+        }
+        .session-toggle[data-active="afternoon"] .indicator {
+            background: var(--afternoon);
+            transform: translateX(100%);
+        }
+
+        /* EXERCISE LIST */
+        .container { padding: 0 20px; }
+
+        .exercise-card {
+            background: var(--card);
+            margin-bottom: 15px;
+            padding: 20px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+            cursor: pointer;
+            box-shadow: var(--shadow-sm); /* Thêm bóng đổ nhẹ cho nổi */
+            user-select: none;
+        }
+
+        .exercise-card:active {
+            transform: scale(0.98);
+        }
+
+        .exercise-card.done {
+            background: #f1f2f6;
+            box-shadow: none;
+            border: 1px solid var(--border);
+            opacity: 0.8;
+        }
+
+        .exercise-info h3 { 
+            margin: 0 0 6px 0; 
+            font-size: 1.05rem; 
+            font-weight: 700;
+            color: var(--text);
+        }
+        
+        .exercise-card.done .exercise-info h3 {
+            text-decoration: line-through;
+            color: var(--gray);
+        }
+
+        .exercise-info p { 
+            margin: 0; 
+            color: var(--gray); 
+            font-size: 0.9rem; 
+        }
+
+        /* CHECKBOX ANIMATION */
+        .checkbox {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            border: 2px solid #ced6e0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            flex-shrink: 0;
+            background: white;
+        }
+
+        .exercise-card.done .checkbox {
+            background: var(--secondary);
+            border-color: var(--secondary);
+            transform: scale(1.1);
+            box-shadow: 0 2px 8px rgba(46, 213, 115, 0.4);
+        }
+
+        .checkbox svg {
+            width: 16px;
+            height: 16px;
+            fill: none;
+            stroke: white;
+            stroke-width: 3;
+            stroke-dasharray: 20;
+            stroke-dashoffset: 20;
+            transition: stroke-dashoffset 0.3s ease 0.1s;
+        }
+
+        .exercise-card.done .checkbox svg {
+            stroke-dashoffset: 0;
+        }
+
+        /* FOOTER */
+        .reset-area {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            border-top: 1px solid var(--border);
+        }
+
+        .reset-btn {
+            background: white;
+            border: 1px solid #ff6b6b;
+            color: #ff6b6b;
+            padding: 10px 25px;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            font-weight: 600;
+            box-shadow: var(--shadow-sm);
+        }
+
+        /* AI Floating Button & Modal Styles (Updated for Light Mode) */
+        .ai-fab {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            width: 60px;
+            height: 60px;
+            background: var(--ai-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 20px rgba(165, 94, 234, 0.4);
+            border: none;
+            cursor: pointer;
+            z-index: 200;
+            transition: transform 0.2s;
+            color: white;
+        }
+        .ai-fab span { font-size: 28px; }
+
+        .ai-modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5); /* Tối nền phía sau */
+            z-index: 300;
+            display: none;
+            align-items: flex-end;
+            backdrop-filter: blur(2px);
+        }
+        .ai-modal-overlay.open { display: flex; }
+
+        .ai-modal {
+            background: #ffffff;
+            width: 100%;
+            height: 85vh;
+            border-radius: 25px 25px 0 0;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 -10px 40px rgba(0,0,0,0.1);
+            animation: slideUp 0.3s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+
+        .ai-header {
+            padding: 18px 20px;
+            background: linear-gradient(135deg, #a55eea, #8854d0);
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+            font-size: 1.1rem;
+            box-shadow: 0 2px 10px rgba(165, 94, 234, 0.2);
+        }
+        
+        .ai-content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            background: #f7f9fc;
+        }
+
+        .chat-message {
+            max-width: 85%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            line-height: 1.5;
+            font-size: 0.95rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .chat-message.ai {
+            background: #ffffff;
+            color: var(--text);
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+            border: 1px solid #edf2f7;
+        }
+        .chat-message.user {
+            background: #a55eea;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+            color: white;
+        }
+        .chat-message.system {
+            background: transparent;
+            align-self: center;
+            color: var(--gray);
+            font-size: 0.8rem;
+            text-align: center;
+            border: none;
+            box-shadow: none;
+            width: 100%;
+        }
+
+        .ai-input-area {
+            padding: 15px;
+            border-top: 1px solid #eee;
+            display: flex;
+            gap: 10px;
+            background: #ffffff;
+        }
+
+        .ai-input {
+            flex: 1;
+            background: #f1f2f6;
+            border: 1px solid transparent;
+            padding: 12px 15px;
+            border-radius: 25px;
+            color: var(--text);
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+        .ai-input:focus { 
+            outline: none; 
+            background: #ffffff;
+            border-color: #a55eea;
+            box-shadow: 0 0 0 3px rgba(165, 94, 234, 0.1);
+        }
+
+        .ai-send-btn {
+            background: #a55eea;
+            border: none;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.1s;
+            box-shadow: 0 3px 10px rgba(165, 94, 234, 0.3);
+        }
+        .ai-send-btn:active { transform: scale(0.95); }
+        
+        .typing-indicator span {
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            background: #a4b0be;
+            border-radius: 50%;
+            animation: bounce 1.4s infinite ease-in-out both;
+            margin: 0 2px;
+        }
+        .typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
+        .typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
+        
+        @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
+
+        .quick-actions {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+            overflow-x: auto;
+            padding-bottom: 5px;
+            scrollbar-width: none;
+        }
+        .quick-actions::-webkit-scrollbar { display: none; }
+
+        .action-chip {
+            background: white;
+            border: 1px solid #e1e1e1;
+            color: #a55eea;
+            padding: 8px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            white-space: nowrap;
+            cursor: pointer;
+            font-weight: 600;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            transition: all 0.2s;
+        }
+        .action-chip:active { transform: scale(0.95); background: #f8f9fa; }
+
+        /* Notification */
+        .confetti-modal {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-150%);
+            background: white;
+            color: var(--text);
+            padding: 12px 25px;
+            border-radius: 30px;
+            font-weight: bold;
+            z-index: 1000;
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border: 1px solid #f1f2f6;
+        }
+        .confetti-modal.show {
+            transform: translateX(-50%) translateY(0);
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <div class="header">
+        <div class="header-top">
+            <h1>Phục Hồi 4 Tuần</h1>
+            <div style="font-size: 0.9rem; font-weight: bold; color: var(--primary)">
+                Tuần <span id="currentWeekDisplay">1</span>
+            </div>
+        </div>
+        <div class="progress-label">
+            <span>Tiến độ tuần này</span>
+            <span id="progressText">0%</span>
+        </div>
+        <div class="progress-track">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+    </div>
+
+    <!-- Week Navigation -->
+    <div class="week-nav">
+        <button class="week-btn active" onclick="app.setWeek(1)">Tuần 1</button>
+        <button class="week-btn" onclick="app.setWeek(2)">Tuần 2</button>
+        <button class="week-btn" onclick="app.setWeek(3)">Tuần 3</button>
+        <button class="week-btn" onclick="app.setWeek(4)">Tuần 4</button>
+    </div>
+
+    <!-- Session Toggle -->
+    <div class="session-toggle" id="sessionToggle" data-active="morning">
+        <div class="indicator"></div>
+        <button class="session-btn active" onclick="app.setSession('morning')">
+            <span>☀️</span> Sáng (Cardio)
+        </button>
+        <button class="session-btn" onclick="app.setSession('afternoon')">
+            <span>🌙</span> Chiều (Core)
+        </button>
+    </div>
+
+    <!-- Exercise List -->
+    <div class="container" id="exerciseList">
+        <!-- Javascript will populate this -->
+    </div>
+
+    <!-- Reset Data -->
+    <div class="reset-area">
+        <p style="font-size: 0.85rem; color: #747d8c; font-style: italic; margin-bottom: 15px;">
+            "Đừng tập quá sức, hãy lắng nghe cơ thể."
+        </p>
+        <button class="reset-btn" onclick="app.resetData()">Xóa dữ liệu & Làm lại</button>
+    </div>
+
+
+    <!-- Notification -->
+    <div class="confetti-modal" id="congratsModal">
+        <span>🎉</span> Tuần này đã hoàn thành!
+    </div>
+
+    <script>
+
+        const app = {
+            data: {
+                1: {
+                    morning: [
+                        { name: "Chạy nâng cao gối", reps: "60 nhịp" },
+                        { name: "Mountain Climber", reps: "2 sets × 15 cái" },
+                        { name: "Plank", reps: "2 sets × 20–25s" },
+                        { name: "Push-up", reps: "3 sets × 6–8 (Form chuẩn)" }
+                    ],
+                    afternoon: [
+                        { name: "Hollow Hold", reps: "2 sets × 15–20s" },
+                        { name: "Plank Tap", reps: "2 sets × 10 cái" },
+                        { name: "Side Plank", reps: "15s mỗi bên" },
+                        { name: "Ab Wheel Rollout", reps: "2 sets × 3–4 (Nhẹ)" }
+                    ]
+                },
+                2: {
+                    morning: [
+                        { name: "Chạy cao gối", reps: "70–80 nhịp" },
+                        { name: "Mountain Climber", reps: "3 sets × 15 cái" },
+                        { name: "Plank", reps: "3 sets × 25–30s" },
+                        { name: "Push-up", reps: "3 sets × 8 cái" }
+                    ],
+                    afternoon: [
+                        { name: "Hollow Hold", reps: "3 sets × 20–25s" },
+                        { name: "Side Plank", reps: "20s mỗi bên" },
+                        { name: "Plank Tap", reps: "3 sets × 10–12 cái" },
+                        { name: "Ab Wheel Rollout", reps: "3 sets × 4 cái" }
+                    ]
+                },
+                3: {
+                    morning: [
+                        { name: "Chạy cao gối", reps: "100 nhịp" },
+                        { name: "Mountain Climber", reps: "3 sets × 20 cái" },
+                        { name: "Plank", reps: "3 sets × 30s" },
+                        { name: "Push-up", reps: "4 sets × 8–10 cái" }
+                    ],
+                    afternoon: [
+                        { name: "Hollow Hold", reps: "3 sets × 25–30s" },
+                        { name: "Plank Tap", reps: "3 sets × 12–14 cái" },
+                        { name: "Crunch", reps: "2 sets × 12 cái" },
+                        { name: "Ab Wheel Rollout", reps: "3 sets × 5 cái" }
+                    ]
+                },
+                4: {
+                    morning: [
+                        { name: "Chạy cao gối", reps: "120 nhịp" },
+                        { name: "Mountain Climber", reps: "3 sets × 25 cái" },
+                        { name: "Plank", reps: "3 sets × 35–40s" },
+                        { name: "Push-up", reps: "4 sets × 10 (Mục tiêu)" }
+                    ],
+                    afternoon: [
+                        { name: "Hollow Hold", reps: "3 sets × 30–35s" },
+                        { name: "Side Plank", reps: "25s mỗi bên" },
+                        { name: "Plank Tap", reps: "3 sets × 14–16 cái" },
+                        { name: "Crunch", reps: "3 sets × 12 cái" },
+                        { name: "Ab Wheel Rollout", reps: "3 sets × 6 cái" }
+                    ]
+                }
+            },
+            state: {
+                currentWeek: 1,
+                currentSession: 'morning',
+                progress: {},
+                currentPercent: 0
+            },
+
+            init: function() {
+                const saved = localStorage.getItem('workoutProgressV2');
+                if (saved) {
+                    this.state.progress = JSON.parse(saved);
+                }
+                this.renderNav();
+                this.renderList();
+                this.updateProgressUI();
+            },
+
+            setWeek: function(week) {
+                this.state.currentWeek = week;
+                document.getElementById('currentWeekDisplay').innerText = week;
+                this.renderNav();
+                this.renderList();
+                this.updateProgressUI();
+            },
+
+            setSession: function(session) {
+                this.state.currentSession = session;
+                const toggle = document.getElementById('sessionToggle');
+                toggle.setAttribute('data-active', session);
+                const buttons = toggle.querySelectorAll('.session-btn');
+                buttons.forEach(btn => btn.classList.remove('active'));
+                if (session === 'morning') buttons[0].classList.add('active');
+                else buttons[1].classList.add('active');
+                this.renderList();
+            },
+
+            toggleExercise: function(index) {
+                const id = `w${this.state.currentWeek}_${this.state.currentSession}_${index}`;
+                if (this.state.progress[id]) {
+                    delete this.state.progress[id];
+                } else {
+                    this.state.progress[id] = true;
+                }
+                this.save();
+                this.renderList(); 
+                this.updateProgressUI();
+            },
+
+            save: function() {
+                localStorage.setItem('workoutProgressV2', JSON.stringify(this.state.progress));
+            },
+
+            renderNav: function() {
+                const btns = document.querySelectorAll('.week-btn');
+                btns.forEach((btn, idx) => {
+                    if (idx + 1 === this.state.currentWeek) btn.classList.add('active');
+                    else btn.classList.remove('active');
+                });
+            },
+
+            renderList: function() {
+                const listEl = document.getElementById('exerciseList');
+                listEl.innerHTML = '';
+                const exercises = this.data[this.state.currentWeek][this.state.currentSession];
+                
+                exercises.forEach((ex, index) => {
+                    const id = `w${this.state.currentWeek}_${this.state.currentSession}_${index}`;
+                    const isDone = this.state.progress[id];
+                    const card = document.createElement('div');
+                    card.className = `exercise-card ${isDone ? 'done' : ''}`;
+                    card.onclick = () => this.toggleExercise(index);
+                    card.innerHTML = `
+                        <div class="exercise-info">
+                            <h3>${ex.name}</h3>
+                            <p>${ex.reps}</p>
+                        </div>
+                        <div class="checkbox">
+                            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                        </div>
+                    `;
+                    listEl.appendChild(card);
+                });
+            },
+
+            updateProgressUI: function() {
+                const morningEx = this.data[this.state.currentWeek].morning;
+                const afternoonEx = this.data[this.state.currentWeek].afternoon;
+                const total = morningEx.length + afternoonEx.length;
+                let completed = 0;
+                morningEx.forEach((_, i) => {
+                    if (this.state.progress[`w${this.state.currentWeek}_morning_${i}`]) completed++;
+                });
+                afternoonEx.forEach((_, i) => {
+                    if (this.state.progress[`w${this.state.currentWeek}_afternoon_${i}`]) completed++;
+                });
+                const percent = Math.round((completed / total) * 100);
+                this.state.currentPercent = percent;
+                const bar = document.getElementById('progressBar');
+                const text = document.getElementById('progressText');
+                bar.style.width = `${percent}%`;
+                text.innerText = `${percent}%`;
+                if (percent === 100) {
+                    bar.style.background = '#2ed573';
+                    this.showCongrats();
+                } else {
+                    bar.style.background = 'linear-gradient(90deg, var(--primary), var(--morning))';
+                }
+            },
+
+            showCongrats: function() {
+                if (this.congratsShown) return;
+                const modal = document.getElementById('congratsModal');
+                modal.classList.add('show');
+                this.congratsShown = true;
+                setTimeout(() => {
+                    modal.classList.remove('show');
+                    this.congratsShown = false;
+                }, 3000);
+            },
+
+            resetData: function() {
+                if(confirm("Bạn muốn xóa toàn bộ lịch sử tập luyện và bắt đầu lại từ đầu?")) {
+                    localStorage.removeItem('workoutProgressV2');
+                    this.state.progress = {};
+                    this.init();
+                }
+            }
+        };
+
+        const aiApp = {
+            openModal: function() {
+                document.getElementById('aiModalOverlay').classList.add('open');
+            },
+            closeModal: function() {
+                document.getElementById('aiModalOverlay').classList.remove('open');
+            },
+            appendMessage: function(sender, text) {
+                const content = document.getElementById('aiChatContent');
+                const div = document.createElement('div');
+                div.className = `chat-message ${sender}`;
+                div.innerHTML = text; // Allow simple HTML
+                content.appendChild(div);
+                content.scrollTop = content.scrollHeight;
+                
+                // Keep quick actions at the bottom if AI speaks
+                if (sender === 'ai') {
+                    const actions = document.querySelector('.quick-actions');
+                    content.appendChild(actions); // Move actions to bottom
+                }
+            },
+            
+            showTyping: function() {
+                const content = document.getElementById('aiChatContent');
+                const div = document.createElement('div');
+                div.className = 'chat-message ai typing-indicator';
+                div.id = 'aiTyping';
+                div.innerHTML = '<span></span><span></span><span></span>';
+                content.appendChild(div);
+                content.scrollTop = content.scrollHeight;
+            },
+
+            removeTyping: function() {
+                const typing = document.getElementById('aiTyping');
+                if(typing) typing.remove();
+            },
+
+
+
+            askProgress: function() {
+                const w = app.state.currentWeek;
+                const p = app.state.currentPercent;
+                const context = `Tôi đang ở Tuần ${w} của lộ trình phục hồi. Tuần này tôi đã hoàn thành ${p}% khối lượng bài tập. Hãy đưa ra nhận xét về tiến độ và một lời động viên ngắn gọn, mạnh mẽ để tôi tiếp tục cố gắng.`;
+                this.appendMessage('user', `📊 Phân tích tiến độ tuần ${w}`);
+                this.callGemini(context);
+            }
+        };
+
+        // Start App
+        app.init();
+    </script>
+</body>
+</html>
